@@ -23,32 +23,32 @@ struct queue{
 	struct queue *next;
 };
 
-struct queue * current, next,new[254],head;
+struct queue *head = NULL,*current;
+
 
 int push(struct proc pushedProcess){
-
-	if(queueSize==0){
-
-		new[queueSize].next = NULL;
-		new[queueSize].process=pushedProcess;
-		head = new[queueSize];
+	struct queue * new;
+	if(head == NULL){
+		new = malloc(sizeof(struct queue));
+		new->next = NULL;
+		new->process=pushedProcess;
+		head = new;
 		++queueSize;
 
 	}
 	else{
-		current = &head;
+		current = head;
 		//while current isnt the last element move to the next element
 		while(current->next != NULL){
 			current = current->next;
 		}
-		//after current reached the last element, current points to the new[queueSize] element
-
-		current->next = &new[queueSize];
-		new[queueSize].process = pushedProcess;
-		new[queueSize].next = NULL;
+		//after current reached the last element, current points to the new element
+		new = malloc(sizeof(struct queue));
+		current->next = new;
+		new->process = pushedProcess;
+		new->next = NULL;
 		++queueSize;
 	}
-
 	return 0;
 }   
 
@@ -68,8 +68,6 @@ int main(void){
 	fp = fopen("processes.txt", "r");
 	int charCounter = 0,c;
 
-	struct proc listOfProcs[10];
-
 
 	for(int i = 0;i<10;i++){// for each line in the text file
 		while((c = fgetc(fp) )!= '\n'){
@@ -80,14 +78,15 @@ int main(void){
 		//when a full line has been placed into the buffer split the line by , delim
 		token = strtok(buffer,delim);
 
-
+		struct proc *newproc;
+		newproc = malloc(sizeof(struct proc));
 		//for each of the 4 elemets of the proc structure
 		for(int j =0;j<4;j++){
 			switch(j){
-				case 0: strcpy(listOfProcs[i].name,token);break;
-				case 1: listOfProcs[i].priority = atoi(token);break;
-				case 2: listOfProcs[i].pid = atoi(token);break;
-				case 3: listOfProcs[i].runtime = atoi(token);break;
+				case 0: strcpy(newproc->name,token);break;
+				case 1: newproc->priority = atoi(token);break;
+				case 2: newproc->pid = atoi(token);break;
+				case 3: newproc->runtime = atoi(token);break;
 				default:printf("this should not be seen\n");return 1;
 			}
 			token = strtok(NULL,delim);
@@ -97,25 +96,16 @@ int main(void){
 		for(int c = 0; c<255;c++){
 			buffer[c] = ' ';
 		}
-
-	}//end while
+		push(*newproc);//push new proc to queue
+	}//end for
 
 	printf("closing file\n");
 	fclose(fp);
 
 
-	/*
-	   after all procs have been made begin linking them together with queue via the push method
-	   */
-
-	for(int i = 0;i<10;i++){
-		push(listOfProcs[i]);
-	}
-
-
 	printf("iterating through queue values\n\n");
 
-	struct queue *checker = &head;
+	struct queue *checker = head;
 
 
 	while(checker!=NULL){
