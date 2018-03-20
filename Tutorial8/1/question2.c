@@ -173,7 +173,7 @@ int main(void) {
 			printf("ERROR: Unable to create child process\n");
 			exit(-1);
 			
-        //parent   
+        	//parent   
 		} else {			
 						
 			process->pid = pid;
@@ -232,7 +232,7 @@ int main(void) {
 					
 			pid = fork();
 			
-            //child
+            		//child
 			if(pid == 0) {				
 				
 				execl("./process", "./process", NULL);
@@ -244,7 +244,7 @@ int main(void) {
 				printf("ERROR: Unable to create child process\n");
 				exit(-1);
 				
-            //parent  
+            		//parent  
 			} else {
 							
 				process->pid = pid;
