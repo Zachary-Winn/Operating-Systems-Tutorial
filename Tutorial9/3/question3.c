@@ -6,46 +6,43 @@
 
 int main (void) {
 
-  int a[100][100]. b[100][100], c[100][100];
-  int i, j, k, sum;
+  int x[100000000];
+  int norm;
+  double pre, after;
+  int thread_num, nthreads = 16;
+  #ifdef _OPENMP
+  omp_set_num_threads(nthreads);
+  #endif
+  time_t t;
+  srand((unsigned) time(&t));
 
-  for (int i = 0; i < 100; i++) {
-      
-      for(int j = 0; j < 100; j++) {
-          
-          a[i][j] = i;
-          b[i][j] = i;
 
-      }
+  for (int i =0; i < 100000000;i++) {
+
+    x[i] = rand()%101;
   }
 
-  #pragma omp parallel shared (a,b,c) private (i,j,k)
+  double start = omp_get_wtime();
 
-  {
+  for (int i = 0; i < 100000000; i++) {
 
-  #pragma omp for schedule (static)
-
-    for( i = 0; i < 100; i++) {
-
-      for ( j = 0; j < 100; j++) {
-
-        c[i][j] = 0;
-
-        for ( k = 0; k < 100; k++) {
-
-          c[i][j] += a[i][k] * a[k][j];
-        }
-      }
-    }
+    norm += fabs(x[i]);
   }
 
-  for (int i = 0; i < 100; i++) {
+  double end = omp_get_wtime() - start;
+  norm = 0;
+  printf("\nSerial took %fs ", end );
 
-      for (int j = 0; j < 100; j++) {
+  start = omp_get_wtime();
+  #pragma omp parallel for reduction(+: norm)
 
-         printf(" %d ", c[i][j]);
-      }
+  for (int i = 0; i<100000000; i++) {
 
-      printf("\n");
-   }
+    norm += fabs(x[i]);
+
+  }
+
+  end = omp_get_wtime() - start;
+
+  printf("Multi threaded took %fs \n", end);
 }
