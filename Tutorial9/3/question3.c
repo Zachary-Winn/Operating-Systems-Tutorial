@@ -17,7 +17,7 @@ int main (void) {
   srand((unsigned) time(&t));
 
 
-  for (int i =0; i < 100000000;i++) {
+  for (int i = 0; i < 100000000; i++) {
 
     x[i] = rand()%101;
   }
